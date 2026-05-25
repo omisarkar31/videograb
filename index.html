@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VideoGrab - Download videos from YouTube, Facebook, Instagram & TikTok">
+    <meta name="keywords" content="video downloader, youtube downloader, facebook video, instagram video, tiktok video">
+    <meta property="og:title" content="VideoGrab - Free Video Downloader">
+    <meta property="og:description" content="Download videos from YouTube, Facebook, Instagram & TikTok instantly">
+    <meta property="og:type" content="website">
+    <title>VideoGrab - Download Videos Instantly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Space Mono', monospace;
+        }
+        
+        @keyframes blob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div class="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        
+        <!-- Header -->
+        <div class="text-center mb-12 fade-in">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    VideoGrab
+                </h1>
+            </div>
+            <p class="text-xl text-slate-400 max-w-xl mx-auto">
+                Download videos from YouTube, Facebook, Instagram & TikTok in seconds
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="w-full max-w-2xl bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
+            
+            <!-- URL Input -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-slate-300 mb-3">
+                    Paste Video URL
+                </label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="videoUrl" 
+                        placeholder="https://www.youtube.com/watch?v=... or paste any link"
+                        class="w-full px-5 py-4 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 transition-all duration-300 hover:border-slate-500 focus:border-blue-500"
+                    />
+                    <div id="platformBadge" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-1 bg-slate-700 rounded-lg hidden">
+                        <span id="platformIcon" class="w-5 h-5"></span>
+                        <span id="platformName" class="text-sm font-medium"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Selection -->
+            <div id="qualitySection" class="mb-8 hidden fade-in">
+                <label class="block text-sm font-semibold text-slate-300 mb-3">
+                    Video Quality
+                </label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button class="quality-btn py-3 px-4 rounded-lg font-medium transition-all duration-200 uppercase text-sm bg-blue-500 text-white shadow-lg shadow-blue-500/50" data-quality="hd">
+                        1080p
+                    </button>
+                    <button class="quality-btn py-3 px-4 rounded-lg font-medium transition-all duration-200 uppercase text-sm bg-slate-700/50 text-slate-300 hover:bg-slate-700 border border-slate-600" data-quality="sd">
+                        480p
+                    </button>
+                    <button class="quality-btn py-3 px-4 rounded-lg font-medium transition-all duration-200 uppercase text-sm bg-slate-700/50 text-slate-300 hover:bg-slate-700 border border-slate-600" data-quality="4k">
+                        4K
+                    </button>
+                </div>
+            </div>
+
+            <!-- Message Display -->
+            <div id="messageBox" class="mb-8 p-4 rounded-lg border hidden">
+                <div class="flex items-start gap-3">
+                    <svg id="messageIcon" class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span id="messageText"></span>
+                </div>
+            </div>
+
+            <!-- Download Button -->
+            <button 
+                id="downloadBtn" 
+                onclick="handleDownload()"
+                class="w-full py-4 px-6 rounded-lg font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-lg hover:shadow-blue-500/50 hover:-translate-y-1 active:translate-y-0"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Download Video
+            </button>
+        </div>
+
+        <!-- Supported Platforms -->
+        <div class="w-full max-w-2xl mt-12">
+            <h3 class="text-sm font-semibold text-slate-400 text-center mb-6">
+                SUPPORTED PLATFORMS
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg p-4 text-center hover:border-slate-600 transition-all duration-300">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    <p class="text-sm font-medium">YouTube</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg p-4 text-center hover:border-slate-600 transition-all duration-300">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    <p class="text-sm font-medium">Facebook</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg p-4 text-center hover:border-slate-600 transition-all duration-300">
+                    <svg class="w-8 h-8 mx-auto mb-2" style="color: #E4405F;" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1 1 12.324 0 6.162 6.162 0 0 1-12.324 0zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm4.965-10.322a1.44 1.44 0 1 1 2.881.001 1.44 1.44 0 0 1-2.881-.001z"/>
+                    </svg>
+                    <p class="text-sm font-medium">Instagram</p>
+                </div>
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-lg p-4 text-center hover:border-slate-600 transition-all duration-300">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-black" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.52-1.06-1.15-1.53-1.72-.55.64-1.07 1.35-1.8 1.8-1.31.94-3.01 1.37-4.7 1.41-.1.01-.2 0-.3.02-.37 0-.74-.02-1.11-.04-.29-.02-.57-.03-.85-.05V5.07c.53-.09 1.06-.18 1.58-.27 1.3-.23 2.61-.08 3.89.3 1.1.33 2.14 1.04 2.94 1.99.86 1.08 1.48 2.4 1.62 3.8-.74-.46-1.58-.89-2.48-1.01.61-.55 1.18-1.14 1.7-1.77.42-.54.83-1.08 1.21-1.65C17.11 6.35 15.8 5.7 14.5 5.54c.4 1.02.88 2.01 1.42 2.97-.11.02-.22.04-.33.04-1.64.02-3.29-.16-4.89-.52-1.35-.3-2.64-.93-3.71-1.8-.97-.8-1.7-1.9-2.1-3.12.46.1.92.16 1.39.17.41 0 .83-.04 1.24-.08 1.18-.11 2.33-.64 3.21-1.41.88-.77 1.53-1.85 1.88-3.06.12-.43.19-.88.2-1.33.01-.24.01-.49 0-.73 0-.08 0-.16-.02-.24.73.04 1.45.07 2.18.04.68-.03 1.35-.09 2.01-.18z"/>
+                    </svg>
+                    <p class="text-sm font-medium">TikTok</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Spaces -->
+        <div class="w-full max-w-2xl mt-12 space-y-8">
+            
+            <!-- Adsterra Ad Space -->
+            <div class="bg-slate-800/30 border border-slate-700/30 rounded-lg p-6 text-center">
+                <div id="adsterra-ad-1" class="min-h-[250px] flex items-center justify-center">
+                    <div class="text-slate-500 text-sm">
+                        <p class="font-semibold mb-2">[ Adsterra Ad Space ]</p>
+                        <p>Replace with your Adsterra ad code</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PropellerAds Space -->
+            <div class="bg-slate-800/30 border border-slate-700/30 rounded-lg p-6 text-center">
+                <div id="propellerads-container" class="min-h-[250px] flex items-center justify-center">
+                    <div class="text-slate-500 text-sm">
+                        <p class="font-semibold mb-2">[ PropellerAds Banner ]</p>
+                        <p>Insert your PropellerAds code here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google AdSense Space -->
+            <div class="bg-slate-800/30 border border-slate-700/30 rounded-lg p-6 text-center">
+                <div id="google-ads-container" class="min-h-[250px] flex items-center justify-center">
+                    <div class="text-slate-500 text-sm">
+                        <p class="font-semibold mb-2">[ Google AdSense ]</p>
+                        <p>Add your Google AdSense responsive ad code</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="w-full max-w-2xl mt-12 text-center text-slate-500 text-sm border-t border-slate-700/50 pt-8">
+            <p class="mb-3">💡 Only download videos you have permission to download</p>
+            <p>© 2024 VideoGrab. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        const platforms = {
+            youtube: { name: 'YouTube', regex: /(?:youtube\.com|youtu\.be)/, color: '#FF0000' },
+            facebook: { name: 'Facebook', regex: /facebook\.com/, color: '#1877F2' },
+            instagram: { name: 'Instagram', regex: /instagram\.com/, color: '#E4405F' },
+            tiktok: { name: 'TikTok', regex: /tiktok\.com/, color: '#000000' }
+        };
+
+        let selectedQuality = 'hd';
+        let detectedPlatform = null;
+
+        const urlInput = document.getElementById('videoUrl');
+        const platformBadge = document.getElementById('platformBadge');
+        const platformName = document.getElementById('platformName');
+        const qualitySection = document.getElementById('qualitySection');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const messageIcon = document.getElementById('messageIcon');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const qualityBtns = document.querySelectorAll('.quality-btn');
+
+        urlInput.addEventListener('input', (e) => {
+            const url = e.target.value;
+            detectedPlatform = null;
+
+            for (const [key, data] of Object.entries(platforms)) {
+                if (data.regex.test(url)) {
+                    detectedPlatform = key;
+                    break;
+                }
+            }
+
+            if (detectedPlatform) {
+                platformName.textContent = platforms[detectedPlatform].name;
+                platformBadge.classList.remove('hidden');
+                qualitySection.classList.remove('hidden');
+            } else {
+                platformBadge.classList.add('hidden');
+                qualitySection.classList.add('hidden');
+            }
+        });
+
+        qualityBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                qualityBtns.forEach(b => {
+                    b.classList.remove('bg-blue-500', 'text-white', 'shadow-lg', 'shadow-blue-500/50');
+                    b.classList.add('bg-slate-700/50', 'text-slate-300', 'border', 'border-slate-600');
+                });
+                btn.classList.remove('bg-slate-700/50', 'text-slate-300', 'border', 'border-slate-600');
+                btn.classList.add('bg-blue-500', 'text-white', 'shadow-lg', 'shadow-blue-500/50');
+                selectedQuality = btn.getAttribute('data-quality');
+            });
+        });
+
+        function handleDownload() {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showMessage('Please enter a valid URL', false);
+                return;
+            }
+
+            if (!detectedPlatform) {
+                showMessage('URL not recognized. Please enter a valid YouTube, Facebook, Instagram, or TikTok link.', false);
+                return;
+            }
+
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Processing...';
+
+            setTimeout(() => {
+                showMessage(`✓ Processing ${platforms[detectedPlatform].name} video. Your download will start shortly!`, true);
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Download Video';
+            }, 1500);
+        }
+
+        function showMessage(text, isSuccess) {
+            messageText.textContent = text;
+            messageBox.classList.remove('hidden');
+
+            if (isSuccess) {
+                messageBox.classList.remove('bg-red-500/10', 'border-red-500/30', 'text-red-300');
+                messageBox.classList.add('bg-green-500/10', 'border-green-500/30', 'text-green-300');
+                messageIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+            } else {
+                messageBox.classList.remove('bg-green-500/10', 'border-green-500/30', 'text-green-300');
+                messageBox.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-300');
+                messageIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+            }
+        }
+
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleDownload();
+            }
+        });
+    </script>
+</body>
+</html>
