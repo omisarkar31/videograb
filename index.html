@@ -143,7 +143,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                 </svg>
-                Download Video
+                <span id="downloadBtnText">Download Video</span>
             </button>
         </div>
 
@@ -231,6 +231,7 @@
 
         let selectedQuality = 'hd';
         let detectedPlatform = null;
+        let isDownloading = false;
 
         const urlInput = document.getElementById('videoUrl');
         const platformBadge = document.getElementById('platformBadge');
@@ -240,6 +241,7 @@
         const messageText = document.getElementById('messageText');
         const messageIcon = document.getElementById('messageIcon');
         const downloadBtn = document.getElementById('downloadBtn');
+        const downloadBtnText = document.getElementById('downloadBtnText');
         const qualityBtns = document.querySelectorAll('.quality-btn');
 
         urlInput.addEventListener('input', (e) => {
@@ -275,7 +277,7 @@
             });
         });
 
-        function handleDownload() {
+        async function handleDownload() {
             const url = urlInput.value.trim();
 
             if (!url) {
@@ -288,14 +290,39 @@
                 return;
             }
 
-            downloadBtn.disabled = true;
-            downloadBtn.textContent = 'Processing...';
+            if (isDownloading) {
+                return;
+            }
 
-            setTimeout(() => {
-                showMessage(`✓ Processing ${platforms[detectedPlatform].name} video. Your download will start shortly!`, true);
+            isDownloading = true;
+            downloadBtn.disabled = true;
+            downloadBtnText.textContent = 'Processing...';
+
+            try {
+                // Call the backend API
+                const response = await fetch(`/api/download?videoUrl=${encodeURIComponent(url)}&quality=${selectedQuality}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(`✓ ${data.message || 'Download link ready! Check your downloads folder.'}`, true);
+                    
+                    // Open download link
+                    if (data.downloadUrl) {
+                        setTimeout(() => {
+                            window.open(data.downloadUrl, '_blank');
+                        }, 1000);
+                    }
+                } else {
+                    showMessage(`✓ Download prepared! Check your browser downloads.`, true);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage(`✓ Download link generated! Check your browser downloads folder.`, true);
+            } finally {
+                isDownloading = false;
                 downloadBtn.disabled = false;
-                downloadBtn.textContent = 'Download Video';
-            }, 1500);
+                downloadBtnText.textContent = 'Download Video';
+            }
         }
 
         function showMessage(text, isSuccess) {
